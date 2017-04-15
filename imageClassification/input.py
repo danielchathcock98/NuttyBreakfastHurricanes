@@ -10,11 +10,12 @@ CATEGORIES_PATH = './HomeDepot/categoriesTrain.txt';
 def readImages():
 
     labels = {}
-
+    labelDict = {'Plumbing': 1, 'Outdoors': 2, 'Flooring': 3,
+        'Lighting & Ceiling Fans': 4, 'Appliances': 5}
     with open(CATEGORIES_PATH, 'r') as f:
         for line in f:
             values = line.split('|')
-            labels[values[2].rstrip()] = values[1]
+            labels[values[2].rstrip()] = labelDict[values[1]]
 
 
     for part in os.listdir(TRAIN_DIR):
@@ -26,7 +27,7 @@ def readImages():
 
                     image = Image.open(filepath)
                     imageClass = labels[filename]
-                    #print(imageClass)
+                    print(imageClass)
 
 
 
