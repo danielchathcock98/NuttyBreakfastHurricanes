@@ -5,9 +5,17 @@ import numpy as np
 import os
 
 TRAIN_DIR = './HomeDepot/ImagesTrain'
+CATEGORIES_PATH = './HomeDepot/categoriesTrain.txt';
 
 def readImages():
+
     labels = {}
+
+    with open(CATEGORIES_PATH, 'r') as f:
+        for line in f:
+            values = line.split('|')
+            labels[values[2].rstrip()] = values[1]
+
 
     for part in os.listdir(TRAIN_DIR):
         partPath = os.path.join(TRAIN_DIR, part)
@@ -16,6 +24,7 @@ def readImages():
 
             image = Image.open(filepath)
             imageClass = labels[filename]
+            #print(imageClass)
 
 
 
