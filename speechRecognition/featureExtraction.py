@@ -9,6 +9,9 @@ import librosa.display
 filename = './HomeDepot/training/1.flac'
 y, sr = librosa.load(filename)
 
+for i in range(len(y)):
+    print(y[i])
+
 mfccs = librosa.feature.mfcc(y=y, sr=sr)
 
 plt.figure(figsize=(10, 4))
