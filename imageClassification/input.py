@@ -19,26 +19,26 @@ def readImages():
 
     trainingData = np.empty((len(labels), 65, 65, 3), dtype=np.uint8)
     trainingLabels = np.empty((len(labels),), dtype=np.uint8)
-
+    i = 0;
     for part in os.listdir(TRAIN_DIR):
-        i = 0;
         if (part != '.DS_Store'):
             partPath = os.path.join(TRAIN_DIR, part)
             for filename in os.listdir(partPath):
                 if (partPath != '.DS_Store'):
                     filepath = os.path.join(partPath, filename)
-
-                    image = np.array(Image.open(filepath))
-                    if (np.shape(image) == (65, 65)):
-                        temp = np.empty((65, 65, 3), dtype=np.uint8)
-                        temp[:,:,0] = temp[:,:,1] = temp[:,:,2] = image
-                        image = temp
-                    trainingData[i] = image
-                    imageClass = labels[filename]
-                    trainingLabels[i] = imageClass
-                    i += 1
-                    if (i % 10000 == 0):
-                        print(i)
+                    if (labels[filename] != -1):
+                        image = np.array(Image.open(filepath))
+                        if (np.shape(image) == (65, 65)):
+                            temp = np.empty((65, 65, 3), dtype=np.uint8)
+                            temp[:,:,0] = temp[:,:,1] = temp[:,:,2] = image
+                            image = temp
+                        trainingData[i] = image
+                        imageClass = labels[filename]
+                        trainingLabels[i] = imageClass
+                        labels[filename] = -1
+                        i += 1
+                        if (i % 10000 == 0):
+                            print(i)
 
 
 
