@@ -39,9 +39,9 @@ def readImages():
                         i += 1
                         if (i % 10000 == 0):
                             print(i)
-
-
-
-
+    permutation = np.arange(len(labels))
+    np.random.shuffle(permutation)
+    trainingData = trainingData[permutation]
+    trainingLabels = trainingLabels[permutation]
 
 readImages()
