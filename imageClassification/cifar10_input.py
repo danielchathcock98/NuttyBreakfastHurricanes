@@ -24,15 +24,13 @@ import os
 from six.moves import xrange  # pylint: disable=redefined-builtin
 import tensorflow as tf
 
-# Process images of this size. Note that this differs from the original CIFAR
-# image size of 32 x 32. If one alters this number, then the entire model
-# architecture will change and any model would need to be retrained.
+# Data given to us is 65 * 65 * 3
 IMAGE_SIZE = 65
 
-# Global constants describing the CIFAR-10 data set.
+# Total, there are 231209 examples for training and eval
 NUM_CLASSES = 5
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 50000
-NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 10000
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = None
+NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = None
 
 
 def read_cifar10(filename_queue):
@@ -86,14 +84,11 @@ def read_cifar10(filename_queue):
   result.label = tf.cast(
       tf.strided_slice(record_bytes, [0], [label_bytes]), tf.int32)
 
-  # The remaining bytes after the label represent the image, which we reshape
-  # from [depth * height * width] to [depth, height, width].
-  depth_major = tf.reshape(
+  # The remaining bytes after the label represent the image
+  result.uint8image = tf.reshape(
       tf.strided_slice(record_bytes, [label_bytes],
                        [label_bytes + image_bytes]),
-      [result.depth, result.height, result.width])
-  # Convert from [depth, height, width] to [height, width, depth].
-  result.uint8image = tf.transpose(depth_major, [1, 2, 0])
+      [result.height, result.width, result.depth])
 
   return result
 
@@ -214,10 +209,10 @@ def inputs(eval_data, data_dir, batch_size):
   """
   if not eval_data:
     filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i)
-                 for i in xrange(1, 6)]
+                 for i in range(5)]
     num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
   else:
-    filenames = [os.path.join(data_dir, 'test_batch.bin')]
+    filenames = [os.path.join(data_dir, 'data_batch_5.bin')]
     num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 
   for f in filenames:
@@ -254,4 +249,4 @@ def inputs(eval_data, data_dir, batch_size):
   # Generate a batch of images and labels by building up a queue of examples.
   return _generate_image_and_label_batch(float_image, read_input.label,
                                          min_queue_examples, batch_size,
-                                         shuffle=False)
+                                         shuffle=True)

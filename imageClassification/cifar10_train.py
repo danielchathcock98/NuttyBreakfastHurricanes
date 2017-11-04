@@ -42,10 +42,12 @@ import time
 import tensorflow as tf
 
 import cifar10
+import cifar10_input
+import pre_process
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('train_dir', '/tmp/cifar10_train',
+tf.app.flags.DEFINE_string('train_dir', '/tmp/image_classification/tf_train/',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 tf.app.flags.DEFINE_integer('max_steps', 1000000,
@@ -61,8 +63,8 @@ def train():
   with tf.Graph().as_default():
     global_step = tf.contrib.framework.get_or_create_global_step()
 
-    # Get images and labels for CIFAR-10.
-    images, labels = cifar10.distorted_inputs()
+    # Get images and labels
+    images, labels = cifar10.inputs(False)
 
     # Build a Graph that computes the logits predictions from the
     # inference model.
@@ -113,7 +115,10 @@ def train():
 
 
 def main(argv=None):  # pylint: disable=unused-argument
-  cifar10.maybe_download_and_extract()
+  (total_size, train_size, eval_size) = pre_process.maybe_convert()
+  cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = train_size
+  cifar10_input.NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = eval_size
+
   if tf.gfile.Exists(FLAGS.train_dir):
     tf.gfile.DeleteRecursively(FLAGS.train_dir)
   tf.gfile.MakeDirs(FLAGS.train_dir)
